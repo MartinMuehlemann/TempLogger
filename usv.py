@@ -24,6 +24,7 @@ def readDS1820(sensorLabel):
     except:
 		print "read DS1820 failed"
 		programmStatus = 0
+		return None
 
 
 def gpio_callback_24(channel):  
@@ -47,7 +48,8 @@ GPIO.add_event_detect(24, GPIO.BOTH, callback=gpio_callback_24, bouncetime=10)
 try:
 	while True:
 		temp = readDS1820(SENSORLABEL)
-		print("Temperature %6.2fC" % temp)
+		if temp != None:
+			print("Temperature %6.2fC" % temp)
 		time.sleep(1)
 
 except KeyboardInterrupt:  
