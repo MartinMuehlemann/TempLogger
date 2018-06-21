@@ -1,9 +1,4 @@
-
-class SensorBaseClass(object):
-	def __init__(self, id, name):
-		self._id = id
-		self._name = name
-	
+from sensor import SensorBaseClass
 
 class Ds1820(SensorBaseClass):
 	def __init__(self, id, name, uid):
