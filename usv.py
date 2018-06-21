@@ -6,34 +6,26 @@ import sys
 import os
 import datetime
 import collections
+from xml.dom import minidom
 
+
+import ds1820
 
 SENSORLABEL = "28-000008ab22e6"
 
 GPIO_PFO_PIN = 24
 
+pfoPinBuffer = collections.deque(maxlen=10)
+debouncedPfoPinLevel = 1 # default power-down
+
+sensors = []
+
+
 class DebounceException(Exception):
 	pass
 
-def readDS1820(sensorLabel):
-	global tempSensorBezeichnung, tempSensorAnzahl, tempSensorWert, programmStatus
-	x = 0
-	try:
-		fileName = "/sys/bus/w1/devices/" + sensorLabel + "/w1_slave"
-		file = open(fileName)
-		filecontent = file.read()
-		file.close()
-		
-		stringvalue = filecontent.split("\n")[1].split(" ")[9]
-		sensorwert = float(stringvalue[2:]) / 1000
-		return sensorwert
-	except KeyboardInterrupt as kie:
-		raise kie
-	except:
-		print "read DS1820 failed"
-		programmStatus = 0
-		return None
-
+class ConfigException(Exception):
+	pass
 
 def gpio_callback_24(channel):  
 	pfo = GPIO.input(24) == 1
@@ -67,6 +59,60 @@ def logEvent(msg):
 def getTimeStamp():
 	return datetime.datetime.now().strftime(b'%d.%m.%Y %H:%M:%S')
 
+def xmlGetNodeText(node):
+	return "".join(e.nodeValue for e in node if e.nodeType == e.TEXT_NODE)
+
+def xmlParseTextElementOneOccurence(parent, nodeName):
+	elements = parent.getElementsByTagName(nodeName)
+	if (len(elements) == 0):
+		raise ConfigException("no element '%s'" %(nodeName))
+	if (len(elements) > 1):
+		raise ConfigException("more than one element '%s'" % (nodeName))
+	return xmlGetNodeText(elements[0].childNodes)
+		
+def readConfig():
+
+	# parse an xml file by name
+	mydoc = minidom.parse('config.xml')
+	
+	configItems = mydoc.getElementsByTagName('sensor')
+	
+	for config in configItems:
+		id = xmlParseTextElementOneOccurence(config, "id")
+		name = xmlParseTextElementOneOccurence(config, "name")
+		
+		sensorType = config.attributes['type'].value
+		print(sensorType)
+		if sensorType == "ds1820":
+			uid = xmlParseTextElementOneOccurence(config, "uid")
+			print("UID: %s" % uid)
+			sensor = ds1820.Ds1820(id,name,uid)
+			sensors.append(sensor)
+		else:
+			print("Unknown sensor type " + sensorType)
+		
+	
+# 	# one specific item attribute
+# 	print('Item #2 attribute:')  
+# 	print(items[1].attributes['name'].value)
+# 	
+# 	# all item attributes
+# 	print('\nAll attributes:')  
+# 	for elem in items:  
+# 	    print(elem.attributes['name'].value)
+# 	
+# 	# one specific item's data
+# 	print('\nItem #2 data:')  
+# 	print(items[1].firstChild.data)  
+# 	print(items[1].childNodes[0].data)
+# 	
+# 	# all items data
+# 	print('\nAll item data:')  
+# 	for elem in items:  
+# 	    print(elem.firstChild.data)
+
+
+
 GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -75,14 +121,16 @@ GPIO.setup(GPIO_PFO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.add_event_detect(23, GPIO.BOTH, callback=gpio_callback_23, bouncetime=10)  
 
 
-pfoPinBuffer = collections.deque(maxlen=10)
-debouncedPfoPinLevel = 1 # default power-down
+
+readConfig()
 
 try:
 	while True:
-		temp = readDS1820(SENSORLABEL)
-		if temp != None:
-			print("Temperature %6.2fC" % temp)
+		
+		for sensor in sensors:
+			temp = sensor.readValue()
+			if temp != None:
+				print("Temperature %s %6.2fC" % (sensor._name, temp))
 
 
 		pfoPin = GPIO.input(GPIO_PFO_PIN)
