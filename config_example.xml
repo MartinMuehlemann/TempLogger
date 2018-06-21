@@ -1,0 +1,19 @@
+
+<config>
+<sensor type="ds1820">
+	<id>1</id>
+	<name>Kuehlraum</name>
+	<uid>28-000008ab22e6</uid>
+</sensor>
+<sensor type="ds1820">
+	<id>3</id>
+	<name>Tiefkühlzelle</name>
+	<uid>28-000008ab6a61</uid>
+</sensor>
+<sensor type="remote">
+	<id>2</id>
+	<name>Abstandhalle</name>
+	<ip>192.168.10.101</ip>
+</sensor>
+
+</config>

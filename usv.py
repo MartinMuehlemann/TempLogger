@@ -73,7 +73,7 @@ def xmlParseTextElementOneOccurence(parent, nodeName):
 def readConfig():
 
 	# parse an xml file by name
-	mydoc = minidom.parse('config.xml')
+	mydoc = minidom.parse('config_example.xml')
 	
 	configItems = mydoc.getElementsByTagName('sensor')
 	
