@@ -9,7 +9,7 @@ import collections
 
 import config
 import ds1820
-
+import gsm
 
 GPIO_PFO_PIN = 24
 
@@ -63,9 +63,29 @@ GPIO.add_event_detect(23, GPIO.BOTH, callback=gpio_callback_23, bouncetime=10)
 
 config.readConfig()
 
+gsmModule = gsm.Gsm()
+gsmModule.initGsm()
+
 try:
 	while True:
-		
+# 		try:
+# 			resp = gsmModule.sendATCommand("AT+CNUM\r")
+# 			print(resp)
+# 		except:
+# 			pass
+# 		try:
+# 			resp = gsmModule.sendATCommand("AT+CNMI?\r")
+# 			print(resp)
+# 		except:
+# 			pass
+# 		
+# 		print("Read SMS")
+# 		try:
+# 			resp = gsmModule.sendATCommand("AT+CMGR=1\r")
+# 			print(resp)
+# 		except gsm.ATException as e:
+# 			print(e)
+	
 		for sensor in config.sensors:
 			temp = sensor.readValue()
 			if temp != None:
