@@ -55,3 +55,5 @@
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
 dtoverlay=w1-gpio
+dtoverlay=pi3-disable-bt
+
