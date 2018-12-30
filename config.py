@@ -23,7 +23,11 @@ def xmlParseTextElementOneOccurence(parent, nodeName):
 def xmlParseTextElementOneOccurenceAsInteger(parent, nodeName):
 	s = xmlParseTextElementOneOccurence(parent, nodeName)
 	return int(s)
-		
+
+def xmlParseTextElementOneOccurenceAsFloat(parent, nodeName):
+	s = xmlParseTextElementOneOccurence(parent, nodeName)
+	return float(s)
+	
 def xmlParseAlarmElementOneOccurence(parent):
 	nodeName="alarm"
 	elements = parent.getElementsByTagName(nodeName)
@@ -41,9 +45,9 @@ def xmlParseAlarmElementOneOccurence(parent):
 		if child.nodeType != minidom.Node.ELEMENT_NODE:
 			continue
 		if child.tagName == 'min':
-			minThreshold = xmlGetNodeText(child.childNodes)
+			minThreshold = float(xmlGetNodeText(child.childNodes))
 		elif child.tagName == 'max':
-			maxThreshold = xmlGetNodeText(child.childNodes)
+			maxThreshold = float(xmlGetNodeText(child.childNodes))
 	return (minThreshold, maxThreshold)	
 
 
