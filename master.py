@@ -11,9 +11,9 @@ import config
 import ds1820
 import gsm
 
-
-import pydevd
-pydevd.settrace("192.168.1.121", port=5678))
+# 
+# import pydevd
+# pydevd.settrace("192.168.1.121", port=5678)
 
 GPIO_PFO_PIN = 24
 
