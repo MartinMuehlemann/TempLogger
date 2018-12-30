@@ -2,11 +2,18 @@
 <config>
 <sensor type="ds1820">
 	<id>1</id>
+	<alarm>
+		<min>-3</min>
+		<max>5</max>
+	</alarm>
 	<name>Kuehlraum</name>
 	<uid>28-000008ab22e6</uid>
 </sensor>
 <sensor type="ds1820">
 	<id>3</id>
+	<alarm>
+		<max>-15</max>
+	</alarm>
 	<name>Tiefkühlzelle</name>
 	<uid>28-000008ab6a61</uid>
 </sensor>
@@ -15,7 +22,6 @@
 	<name>Abstandhalle</name>
 	<ip>192.168.10.101</ip>
 	<port>10000</port>
-	
 </sensor>
 
 </config>

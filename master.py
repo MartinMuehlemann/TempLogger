@@ -68,8 +68,11 @@ try:
 		
 		for sensor in config.sensors:
 			temp = sensor.readValue()
+			print("Temperature %s %6.2fC" % (sensor._name, temp))
 			if temp != None:
-				print("Temperature %s %6.2fC" % (sensor._name, temp))
+				if sensor.isAlarm(temp):
+					print("Alarm %s %6.2fC" % (sensor._name, temp))	
+				
 
 
 		pfoPin = GPIO.input(GPIO_PFO_PIN)

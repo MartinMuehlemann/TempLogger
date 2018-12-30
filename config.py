@@ -24,6 +24,26 @@ def xmlParseTextElementOneOccurenceAsInteger(parent, nodeName):
 	s = xmlParseTextElementOneOccurence(parent, nodeName)
 	return int(s)
 		
+def xmlParseAlarmElementOneOccurence(parent):
+	nodeName="alarm"
+	elements = parent.getElementsByTagName(nodeName)
+	if (len(elements) == 0):
+		return #raise ConfigException("no element '%s'" %(nodeName))
+	if (len(elements) > 1):
+		return #raise ConfigException("more than one element '%s'" % (nodeName))
+	
+	minThreshold = None
+	maxThreshold = None
+
+	for child in elements[0].childNodes:
+		if child.nodeType != minidom.Node.ELEMENT_NODE:
+			continue
+		if child.tagName == 'min':
+			minThreshold = xmlGetNodeText(child.childNodes)
+		elif child.tagName == 'max':
+			maxThreshold = xmlGetNodeText(child.childNodes)
+	return (minThreshold, maxThreshold)	
+
 
 def readConfig():
 	# parse an xml file by name
@@ -35,19 +55,26 @@ def readConfig():
 		id = xmlParseTextElementOneOccurenceAsInteger(config, "id")
 		name = xmlParseTextElementOneOccurence(config, "name")
 		
+		(alarmMin, alarmMax) = xmlParseAlarmElementOneOccurence(config)
+		
 		sensorType = config.attributes['type'].value
 		print(sensorType)
+		sensor = None
 		if sensorType == "ds1820":
 			uid = xmlParseTextElementOneOccurence(config, "uid")
 			print("DS1820: UID: %s" % uid)
 			sensor = ds1820.Ds1820(id,name,uid)
-			sensors.append(sensor)
 		if sensorType == "remote":
 			ip = xmlParseTextElementOneOccurence(config, "ip")
 			port = xmlParseTextElementOneOccurenceAsInteger(config, "port")
 			print("RemoteSensor IP: %s %u" % (ip, port))
 			sensor = ds1820.Ds1820(id,name,uid)
-			sensors.append(sensor)
 		else:
 			print("Unknown sensor type " + sensorType)
 		
+		if (sensor != None):
+			sensor.setAlarm(alarmMin, alarmMax)
+			sensors.append(sensor)
+
+
+readConfig()
