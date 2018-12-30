@@ -12,6 +12,9 @@ import ds1820
 import gsm
 
 
+import pydevd
+pydevd.settrace("EclipseIDE_HOSTNAME", port=5678)
+
 GPIO_PFO_PIN = 24
 
 pfoPinBuffer = collections.deque(maxlen=10)
@@ -136,7 +139,7 @@ try:
 		time.sleep(1)
 
 except KeyboardInterrupt:  
-    GPIO.cleanup()       # clean up GPIO on CTRL+C exit  
-GPIO.cleanup()           # clean up GPIO on normal exit  
+	pass  
+GPIO.cleanup()           # clean up GPIO on exit  
 
 
