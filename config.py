@@ -28,12 +28,14 @@ def xmlParseAlarmElementOneOccurence(parent):
 	nodeName="alarm"
 	elements = parent.getElementsByTagName(nodeName)
 	if (len(elements) == 0):
-		return #raise ConfigException("no element '%s'" %(nodeName))
+		return (None, None)
 	if (len(elements) > 1):
-		return #raise ConfigException("more than one element '%s'" % (nodeName))
+		raise ConfigException("more than one element '%s'" % (nodeName))
 	
 	minThreshold = None
 	maxThreshold = None
+
+	print(elements[0].childNodes)
 
 	for child in elements[0].childNodes:
 		if child.nodeType != minidom.Node.ELEMENT_NODE:
